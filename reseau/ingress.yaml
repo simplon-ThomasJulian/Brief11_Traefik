@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vote-ingress
+  annotations:
+    cert-manager.io/issuer: https
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: default-whitelist@kubernetescrd,default-redirectscheme@kubernetescrd,default-sso@kubernetescrd
+    traefik.ingress.kubernetes.io/router.tls.options: default-client-cert@kubernetescrd
+spec:
+  tls:
+    - hosts:
+      - thomate.distributeur-de-pain.best
+      secretName: tls-voteapp-ingress-http
+  rules:
+  - host: thomate.distributeur-de-pain.best
+    http:
+        paths:
+        - pathType: ImplementationSpecific
+          path: /
+          backend:
+            service:
+              name: votecluster
+              port:
+                number: 80
